@@ -1,0 +1,16 @@
+
+
+
+Plan (FX):
+- podmenu
+- dialogi
+- wyświetlenie na czymś typu canvas stanu gry
+- podpięcie klawiszy
+
+
+Podstawy:
+- ograniczenia ruchu
+- proste wyświetlanie
+- gra 2d
+- dodać potwora
+- akcja kolizji z potworem
