@@ -9,8 +9,6 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Double.min;
-
 public class Controller {
     @FXML
     Canvas mycanvas;
@@ -18,8 +16,7 @@ public class Controller {
     String path = "res/";
     List<String> files;
     int fileIndex = 0;
-    int IMG_HEIGHT;
-    int IMG_WIDTH;
+    int IMG_SIZE;
     int IMG_PAD = 5;
 
     //Funkcja wykonywana na początku tworzenia sceny
@@ -30,8 +27,7 @@ public class Controller {
         files.add("LoL_Screenshot.png");
         System.out.println("initializing...");
         System.out.println("canvas height:" + mycanvas.getHeight());
-        IMG_HEIGHT = Math.min(300, (int)Math.min(mycanvas.getHeight(), mycanvas.getWidth()));
-        IMG_WIDTH = IMG_HEIGHT;
+        IMG_SIZE = Math.min(300, (int)Math.min(mycanvas.getHeight(), mycanvas.getWidth()));
     }
 
 
@@ -52,11 +48,32 @@ public class Controller {
                 new Image(getClass().getResourceAsStream(path + files.get(fileIndex)));
         GraphicsContext gc = mycanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, 400, 400);
-        int offsetX = ((int)mycanvas.getWidth() - IMG_WIDTH) / 2;
-        int offsetY = ((int)mycanvas.getHeight() - IMG_HEIGHT) / 2;
+        int offsetX = ((int)mycanvas.getWidth() - IMG_SIZE) / 2;
+        int offsetY = ((int)mycanvas.getHeight() - IMG_SIZE) / 2;
+
+        //rysowanie prostokąta
         gc.setLineWidth(1);
-        gc.strokeRect(offsetX - IMG_PAD, offsetY - IMG_PAD , IMG_WIDTH + 2 * IMG_PAD, IMG_HEIGHT + 2 * IMG_PAD);
-        gc.drawImage(currentlySelected, offsetX, offsetY, IMG_WIDTH, IMG_HEIGHT);
+        gc.strokeRect(offsetX - IMG_PAD, offsetY - IMG_PAD , IMG_SIZE + 2 * IMG_PAD, IMG_SIZE + 2 * IMG_PAD);
+
+        //rysowanie obrazka
+        int w = (int)currentlySelected.getWidth();
+        int h = (int)currentlySelected.getHeight();
+        int rescaledHeight = 0, rescaledWidth = 0;
+        int deltaX = 0, deltaY = 0;
+        if (w>=h) {
+            //obrazek szerszy niż wyższy
+            rescaledWidth = IMG_SIZE;
+            double f = 1.0 * IMG_SIZE / w;
+            rescaledHeight = (int)(h * f);
+            deltaY = (IMG_SIZE - rescaledHeight) / 2;
+        } else {
+            //wyższy niż szerszy
+            rescaledHeight = IMG_SIZE;
+            double f = 1.0 * IMG_SIZE / h;
+            rescaledWidth = (int) (w * f);
+            deltaX = (IMG_SIZE - rescaledWidth) / 2;
+        }
+        gc.drawImage(currentlySelected, offsetX + deltaX, offsetY + deltaY, rescaledWidth, rescaledHeight);
 
     }
 
