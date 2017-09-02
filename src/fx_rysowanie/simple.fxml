@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox id="vbox" prefHeight="400" prefWidth="1200" xmlns="http://javafx.com/javafx/8.0.112"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="fx_rysowanie.Controller">
+    <MenuBar fx:id="menuBar">
+        <menus>
+            <Menu text="File">
+                <items>
+                    <MenuItem text="New" />
+                    <MenuItem text="Save" />
+                    <MenuItem text="Save As" />
+                    <SeparatorMenuItem />
+                    <MenuItem text="Exit" />
+                </items>
+            </Menu>
+            <Menu text="Edit">
+                <items>
+                    <MenuItem text="Copy" />
+                    <MenuItem text="Cut" />
+                    <MenuItem text="Paste" />
+                </items>
+            </Menu>
+
+            <Menu text="Help">
+                <items>
+                    <MenuItem disable="true" text="Search" />
+                    <MenuItem text="Online Manual" visible="false" />
+                    <SeparatorMenuItem />
+                    <MenuItem text="Online Manual" visible="false" />
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+    <BorderPane prefHeight="200.0" prefWidth="200.0">
+        <right>
+            <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5">
+                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#drawOnCanvas" text="Rysuj na canvas" BorderPane.alignment="CENTER" />
+            </VBox>
+        </right>
+        <center>
+            <Canvas fx:id="mycanvas" height="400" width="800" />
+        </center>
+        <left>
+        </left>
+        <bottom>
+        </bottom>
+    </BorderPane>
+
+</VBox>

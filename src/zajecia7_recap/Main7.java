@@ -1,4 +1,4 @@
-package zajecia6;
+package zajecia7_recap;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -6,12 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main6 extends Application {
+public class Main7 extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sixth.fxml"));
-        primaryStage.setTitle("Zajęcia 6");
+        Parent root = FXMLLoader.load(getClass().getResource("seven.fxml"));
+        primaryStage.setTitle("Zajęcia 7");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }

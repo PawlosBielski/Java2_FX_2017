@@ -7,6 +7,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.SnapshotParameters;
@@ -15,21 +17,19 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
-import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class Controller {
@@ -45,10 +45,132 @@ public class Controller {
     @FXML
     Stage stage;
 
-    List<Image> ikony;
+
+    //////////////////////////////////////////
+    // Dane dotyczące gry
+    //////////////////////////////////////////
 
 
-    public Controller() {
+    List<Image> ikony;  //kolekcja obrazków
+    List<Sprite> sprites;   //kolekcja obiektów odpowiadających postaciom gry
+
+    Set<SmallSprite> fires;  //kolekcja małych obiektów animowanych
+
+    //stałe w programie
+    int ICON_SIZE = 120;
+    int FRAMES_PER_SECOND = 30;
+    double COLLISION_DISTANCE = 50;
+
+
+    /**
+     *  Główna klasa zbierająca informacje o pojedynczej postaci gry.
+     *  Zawiera również informacje o pozycji postaci i prędkości jej ruchu, oraz metody
+     *  do wykrywania kolizji, rysowania postaci, i ustalania nowego celu ruchu.
+     */
+    class Sprite {
+        int iconNumber;
+        boolean isSelected; //true jeśli tą postacią chcemy poruszać
+
+        //Położenia
+        double x, y;  //współrzędne centrum spritea
+        double goalX, goalY; //współrzędne punktu do którego zmierzamy
+
+        //Prędkości
+        double v = 5;   //maksymalna prędkość
+        double vx = 0;  //składowe aktualnej prędkości
+        double vy = 0;
+
+
+        //tzw. Konstruktor, czyli tworzenie konkretnej instancji tej klasy
+        public Sprite(int iconNumber, double x, double y) {
+            this.iconNumber = iconNumber;
+            this.x = x;
+            this.y = y;
+            this.goalX = x;
+            this.goalY = y;
+        }
+
+        //drukuje sprite'a na `gc` centrum w (x,y)
+        void printSprite(GraphicsContext gc) {
+            printIconWithRectangle(gc, ikony.get(iconNumber),
+                    (int)x - ICON_SIZE/2, (int)y - ICON_SIZE/2, isSelected);
+        }
+
+        //sprawdza czy obecny sprite koliduje z punktem (px, py)
+        boolean collidesWith(double px, double py) {
+            return distance(x, y, px, py) < COLLISION_DISTANCE;
+        }
+
+        //Wykonywana jeśli chcemy by sprite od teraz poruszał się w kierunku punktu (newGoalX, newGoalY)
+        public void setNewGoalPosition(double newGoalX, double newGoalY){
+            goalX = newGoalX;
+            goalY = newGoalY;
+            double dx = goalX - x;
+            double dy = goalY - y;
+            if (dy==0) {
+                if (dx>0) {
+                    vx = v;
+                } else {
+                    vx = -v;
+                }
+                return;
+            }
+
+            double A = dx / dy;
+            vy = v / Math.sqrt(1 + A * A);
+            if (dy<0) vy = -vy;
+            vx = A * vy;
+        }
+
+        //Wykonywana w każdej klatce animacji: wyliczenie nowego położenia sprite'a
+        public void updatePosition() {
+            //warunek dla osiągnięcia celu
+            if (distance(x+vx, y+vy, goalX,goalY) > distance(x,y,goalX,goalY)) {
+                x = goalX;
+                y = goalY;
+                return;
+            }
+            x += vx;
+            y += vy;
+        }
+
+        private double distance(double x, double y, double x1, double y1) {
+            return Math.sqrt((x - x1) * (x - x1) + (y - y1) * (y - y1));
+        }
+
+    }
+
+    private void printIconWithRectangle(GraphicsContext gc, Image i, int x, int y, boolean isSelected) {
+        gc.drawImage(i, x+5, y+5, ICON_SIZE-5, ICON_SIZE-5);
+        if (isSelected) {
+            gc.setLineWidth(3);
+            gc.setStroke(Color.YELLOWGREEN);
+        } else {
+            gc.setLineWidth(1);
+            gc.setStroke(Color.GRAY);
+        }
+        gc.strokeRoundRect(x, y, ICON_SIZE, ICON_SIZE, 10, 10);
+        gc.setStroke(Color.BLACK);
+
+    }
+
+    private void repaintScene(GraphicsContext gc) {
+        gc.clearRect(0, 0, 800, 800);
+        gc.setFill(Color.color(0.1, 0.7, 0.5, 0.5));
+        gc.fillArc(10, 110, 300, 300, 45, 240, ArcType.OPEN);
+        for(Sprite s : sprites) {
+            s.printSprite(gc);
+        }
+        for(SmallSprite s : fires) {
+            s.printSprite(gc);
+        }
+
+    }
+
+
+    //tworzenie postaci gry (sprite'ów)
+    private void initializeSprites() {
+        //Obrazki spriteów
         List<String> iconFiles = new ArrayList<>();
         iconFiles.add("Lulu-Dragon-Trainer-icon.png");
         iconFiles.add("Quinn-Valor-icon.png");
@@ -59,7 +181,128 @@ public class Controller {
         for(String name : iconFiles) {
             ikony.add(loadImage(name));
         }
+
+        sprites = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Sprite s = new Sprite(i, 150 + 135 * i, 100);  //ustawienie początkowych pozycji sprite'ów
+            sprites.add(s);
+        }
+        sprites.get(0).isSelected = true;
+
+        fires = new HashSet<>();     //narazie pusta lista małych spriteów
+
     }
+
+    //Tworzenie periodycznej animacji
+    private void initializeGameAnimation(GraphicsContext gc) {
+        //Poniższy timelinie będzie odpalał "EventHandler" wybraną liczbę razy na sekunde
+        Timeline mainTimeline = new Timeline(new KeyFrame(Duration.millis(1000 / FRAMES_PER_SECOND),
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        //Wykonywana w każdej klatce animacji gry:
+
+                        //Przesuń sprite'y na nowe pozycje
+                        for(Sprite s : sprites) {
+                            s.updatePosition();
+                        }
+                        Set<SmallSprite> toErase = new HashSet<>();
+                        for(SmallSprite s : fires) {
+                            if (s.isDead()) {
+                                toErase.add(s);
+                            }
+                        }
+                        fires.removeAll(toErase);
+                        for(SmallSprite s : fires) {
+                            s.updatePosition();
+                        }
+
+                        //Narysuj całą planszę na nowo
+                        repaintScene(gc);
+                    }
+                }));
+        mainTimeline.setCycleCount(Timeline.INDEFINITE);
+        mainTimeline.play();
+    }
+
+    private void initializeMouseEvents() {
+        // Nieużwyana obecnie
+        mycanvas.addEventHandler(MouseEvent.MOUSE_DRAGGED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent t) {
+//                        Sprite lulu = sprites.get(selectedSprite);
+//                        lulu.x = (int) (t.getX() + offsetX);
+//                        lulu.y = (int) (t.getY() + offsetY);
+                    }
+                });
+
+        // Ustala nową pozycję docelową dla aktualnie wybranego sprite'a
+        mycanvas.addEventHandler(MouseEvent.MOUSE_CLICKED,
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent t) {
+//                        System.out.println(t.getButton());
+                        //współrzędne kliknięcia
+                        int xx = (int)t.getX();
+                        int yy = (int)t.getY();
+
+                        for(Sprite s : sprites) {
+                            if (s.isSelected) {
+                                if (t.getButton().equals(MouseButton.PRIMARY)) {
+                                    s.setNewGoalPosition(xx, yy);
+                                } else if (t.getButton().equals(MouseButton.SECONDARY)) {
+                                   fires.add(new SmallSprite(
+                                           s.x, s.y, xx, yy, 15, "fire", 7, 130, 5));
+                                }
+                            }
+                        }
+
+                        //nieużywana
+                        if (t.getClickCount() >1) {
+//                            reset(canvas, Color.BLUE);
+                        }
+                    }
+                });
+
+    }
+
+
+    //Podłączenie eventów pod klawisze
+    private void initializeKeyboardEvents() {
+        //Wykorzystanie zdarzeń naciśnięcia klawiszy 1..4 do wyboru spriteów
+        mycanvas.getScene().setOnKeyPressed(event -> {
+            for(Sprite s : sprites) {
+                s.isSelected = false;
+            }
+            if (event.getCode()== (KeyCode.DIGIT1)) {
+                sprites.get(0).isSelected = true;
+            }
+            if (event.getCode()== (KeyCode.DIGIT2)) {
+                sprites.get(1).isSelected = true;
+            }
+            if (event.getCode()== (KeyCode.DIGIT3)) {
+                sprites.get(2).isSelected = true;
+            }
+            if (event.getCode()== (KeyCode.DIGIT4)) {
+                sprites.get(3).isSelected = true;
+            }
+        });
+    }
+
+    public void startGame() {
+        //Użycie canvasu:
+        GraphicsContext gc = mycanvas.getGraphicsContext2D();
+        initializeSprites();
+        initializeMouseEvents();
+        initializeKeyboardEvents();
+        initializeGameAnimation(gc);
+    }
+
+    //////////////////////////////////////////////
+    // Pozostałe metody (do testów JavaFX)
+    // (nie związane z grą)
+    //////////////////////////////////////////////
 
     public void sayIt() {
         System.out.println("It");
@@ -78,28 +321,6 @@ public class Controller {
         } else {
             toolsMenu.setDisable(true);
         }
-    }
-
-    public void drawOnCanvas() {
-        //Użycie canvasu:
-        GraphicsContext gc = mycanvas.getGraphicsContext2D();
-
-        //see eg. http://docs.oracle.com/javafx/2/canvas/jfxpub-canvas.htm
-        gc.setFill(Color.color(0.1, 0.7, 0.5, 0.5));
-        gc.fillArc(10, 110, 300, 300, 45, 240, ArcType.OPEN);
-        int size = 128;
-        for (int i = 0; i < ikony.size(); i++) {
-            gc.drawImage(ikony.get(i), 50 + i * 135, 55, size, size);
-            gc.strokeRoundRect(50 + i * 135, 50, size, size, 10, 10);
-        }
-
-        //todo: załadować część obrazka
-        //todo: ustawić rodzaj pędzla
-        //todo: obsługa myszy i "draggable"
-
-
-
-
     }
 
     public void animateLulu() {
@@ -121,6 +342,7 @@ public class Controller {
                         new KeyValue(phi, 180)
                 )
         );
+
         timeline.setAutoReverse(true);
         timeline.setCycleCount(12);
 
@@ -128,16 +350,9 @@ public class Controller {
             @Override
             public void handle(long now) {
                 Image i = ikony.get(0);
-
-                ImageView iv = new ImageView(i);
-                iv.setRotate(phi.getValue());
-                SnapshotParameters params = new SnapshotParameters();
-                params.setFill(Color.TRANSPARENT);
-                Image rotatedImage = iv.snapshot(params, null);
-
                 gc.clearRect(0, 0, 500, 500);
                 //show icon on canvas
-                gc.drawImage(rotatedImage, x.doubleValue(), y.doubleValue(), 300, 300);
+                gc.drawImage(i, x.doubleValue(), y.doubleValue(), 300, 300);
 
             }
         };
@@ -250,5 +465,14 @@ public class Controller {
     //private
     Image loadImage(String name) {
         return new Image(getClass().getResourceAsStream("res/" + name));
+    }
+
+    private Image rotateImage(Image i, DoubleProperty phi) {
+        ImageView iv = new ImageView(i);
+        iv.setRotate(phi.getValue());
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        Image rotatedImage = iv.snapshot(params, null);
+        return rotatedImage;
     }
 }

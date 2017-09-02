@@ -1,4 +1,4 @@
-package zajecia6;
+package fx_rysowanie;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +10,9 @@ public class Main6 extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sixth.fxml"));
-        primaryStage.setTitle("Zajęcia 6");
-        primaryStage.setScene(new Scene(root, 800, 600));
+        Parent root = FXMLLoader.load(getClass().getResource("simple.fxml"));
+        primaryStage.setTitle("Proste rysowanie w JavaFX");
+        primaryStage.setScene(new Scene(root, 1200, 600));
         primaryStage.show();
     }
 

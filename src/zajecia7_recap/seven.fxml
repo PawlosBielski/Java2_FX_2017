@@ -4,13 +4,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox id="vbox" prefHeight="400" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.112"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="zajecia6.Controller">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="zajecia7_recap.Controller">
     <MenuBar fx:id="menuBar" onKeyPressed="#sayIt">
         <menus>
             <Menu text="File">
                 <items>
                     <MenuItem text="New" />
-                    <MenuItem text="Open" onAction="#myOpenFile"/>
+                    <MenuItem text="Open" onAction="#sayIt"/>
                     <MenuItem text="Save" />
                     <MenuItem text="Save As" />
                     <SeparatorMenuItem />
@@ -27,14 +27,14 @@
             <Menu fx:id="toolsMenu" text="Tools">
                 <items>
                     <MenuItem text="Calculator" />
-               <Menu mnemonicParsing="false" text="Unspecified Menu">
-                 <items>
-                   <MenuItem mnemonicParsing="false" text="Action 1" />
-                     <SeparatorMenuItem mnemonicParsing="false" />
-                     <CheckMenuItem mnemonicParsing="false" text="Unspecified Action" />
-                     <MenuItem mnemonicParsing="false" text="Action 2" />
-                 </items>
-               </Menu>
+                    <Menu mnemonicParsing="false" text="Unspecified Menu">
+                        <items>
+                            <MenuItem mnemonicParsing="false" text="Action 1" />
+                            <SeparatorMenuItem mnemonicParsing="false" />
+                            <CheckMenuItem mnemonicParsing="false" text="Unspecified Action" />
+                            <MenuItem mnemonicParsing="false" text="Action 2" />
+                        </items>
+                    </Menu>
                     <MenuItem text="Cutter" />
                     <MenuItem text="Color designer" />
                 </items>
@@ -49,15 +49,11 @@
             </Menu>
         </menus>
     </MenuBar>
-    <BorderPane prefHeight="200.0" prefWidth="200.0">
+    <BorderPane prefHeight="200.0" prefWidth="500.0">
         <right>
             <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5">
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#loginDialog" text="Log In" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#zmienNaDuze" text="Zamień na duże litery" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#startGame" text="Start game!" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#animateLulu" text="Prosta animacja" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#disableToolsMenu" text="Wyłącz 'Tools'" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 200" mnemonicParsing="false" onAction="#alertujUsera" text="Pokaż alert" BorderPane.alignment="CENTER" />
+                <Button style="-fx-pref-width: 100"  onAction="#showDialog" text="Log In" BorderPane.alignment="CENTER" />
+                <Button style="-fx-pref-width: 100"  onAction="#showPicture" text="Show selected picture" BorderPane.alignment="CENTER" />
                 <Label onMouseClicked="#alertujUsera"> (na Label) pokaż alert</Label>
             </VBox>
         </right>
@@ -65,9 +61,15 @@
             <Canvas fx:id="mycanvas" height="400" width="400" />
         </center>
         <left>
-            <TextArea fx:id="oknoTekstowe" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5; -fx-pref-width: 130">
+
+            </VBox>
         </left>
         <bottom>
+            <HBox alignment="TOP_CENTER">
+                <Button style="-fx-pref-width: 100"  onAction="#previousFile" text="Previous" BorderPane.alignment="CENTER" />
+                <Button style="-fx-pref-width: 100"  onAction="#nextFile" text="Next" BorderPane.alignment="CENTER" />
+            </HBox>
         </bottom>
     </BorderPane>
 
