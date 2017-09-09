@@ -1,0 +1,5 @@
+
+- add open-file (directory) dialog
+- add image overlay, e.g. https://stackoverflow.com/questions/2318020/merging-two-images
+- add keyboard shortcuts (next/previous/apply_something)
+- image recognition? https://www.tensorflow.org/install/install_java (works for sure for python/c++)

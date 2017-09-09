@@ -10,7 +10,7 @@
             <Menu text="File">
                 <items>
                     <MenuItem text="New" />
-                    <MenuItem text="Open" onAction="#sayIt"/>
+                    <MenuItem text="Open" onAction="#myOpenFile"/>
                     <MenuItem text="Save" />
                     <MenuItem text="Save As" />
                     <SeparatorMenuItem />
@@ -55,6 +55,9 @@
                 <Button style="-fx-pref-width: 100"  onAction="#showDialog" text="Log In" BorderPane.alignment="CENTER" />
                 <Button style="-fx-pref-width: 100"  onAction="#showPicture" text="Show selected picture" BorderPane.alignment="CENTER" />
                 <Label onMouseClicked="#alertujUsera"> (na Label) pokaż alert</Label>
+                <TextField fx:id="dirpath" style="-fx-pref-width: 100"/>
+                <Button style="-fx-pref-width: 100"  onAction="#readDir" text="Read directory" BorderPane.alignment="CENTER" />
+
             </VBox>
         </right>
         <center>
