@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox id="vbox" prefHeight="400" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.112"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="zajecia7_recap.Controller">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox id="vbox" prefHeight="400" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zajecia7_recap.Controller">
     <MenuBar fx:id="menuBar" onKeyPressed="#sayIt">
         <menus>
             <Menu text="File">
                 <items>
                     <MenuItem text="New" />
-                    <MenuItem text="Open" onAction="#myOpenFile"/>
+                    <MenuItem onAction="#myOpenFile" text="Open" />
                     <MenuItem text="Save" />
                     <MenuItem text="Save As" />
                     <SeparatorMenuItem />
@@ -51,27 +61,30 @@
     </MenuBar>
     <BorderPane prefHeight="200.0" prefWidth="500.0">
         <right>
-            <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5">
-                <Button style="-fx-pref-width: 100"  onAction="#showDialog" text="Log In" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 100"  onAction="#showPicture" text="Show selected picture" BorderPane.alignment="CENTER" />
+            <VBox alignment="TOP_CENTER" prefHeight="406.0" prefWidth="154.0" style="-fx-border-style: solid;-fx-border-radius: 5">
+                <Button onAction="#showDialog" style="-fx-pref-width: 100" text="Zaloguj sie" BorderPane.alignment="CENTER" />
+                <Button onAction="#showPicture" style="-fx-pref-width: 100" text="Pokaz wybrany" BorderPane.alignment="CENTER" />
                 <Label onMouseClicked="#alertujUsera"> (na Label) pokaż alert</Label>
-                <TextField fx:id="dirpath" style="-fx-pref-width: 100"/>
-                <Button style="-fx-pref-width: 100"  onAction="#readDir" text="Read directory" BorderPane.alignment="CENTER" />
+                <TextField fx:id="dirpath" prefHeight="34.0" prefWidth="114.0" promptText="TU bedzie wyswietlac sie historia twoich dzialan" style="-fx-pref-width: 100" text="TU bedzie wyswietlac sie historia twoich dzialan">
+               <font>
+                  <Font size="8.0" />
+               </font>
+            </TextField>
+                <Button onAction="#readDir" prefHeight="25.0" prefWidth="268.0" style="-fx-pref-width: 100" text="Wypisz liste obrazow" BorderPane.alignment="CENTER" />
+            <Label fx:id="listaobrazow" prefHeight="158.0" prefWidth="187.0" text="listaobrazow" />
 
             </VBox>
         </right>
         <center>
-            <Canvas fx:id="mycanvas" height="400" width="400" />
+            <Canvas fx:id="mycanvas" height="400" opacity="0.8" width="400" />
         </center>
         <left>
-            <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5; -fx-pref-width: 130">
-
-            </VBox>
+            <VBox fx:id="lewypanel" alignment="TOP_CENTER" onContextMenuRequested="#isSelected" onMouseClicked="#handleOnMouseClicked" style="-fx-border-style: solid;-fx-border-radius: 5; -fx-pref-width: 130" />
         </left>
         <bottom>
             <HBox alignment="TOP_CENTER">
-                <Button style="-fx-pref-width: 100"  onAction="#previousFile" text="Previous" BorderPane.alignment="CENTER" />
-                <Button style="-fx-pref-width: 100"  onAction="#nextFile" text="Next" BorderPane.alignment="CENTER" />
+                <Button onAction="#previousFile" style="-fx-pref-width: 100" text="Poprzedni" BorderPane.alignment="CENTER" />
+                <Button onAction="#nextFile" style="-fx-pref-width: 100" text="Nastepny" BorderPane.alignment="CENTER" />
             </HBox>
         </bottom>
     </BorderPane>
