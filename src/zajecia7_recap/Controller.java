@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+//glowny kontroler
 public class Controller {
     @FXML
     Canvas mycanvas;
