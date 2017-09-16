@@ -1,18 +1,22 @@
 package zajecia7_recap;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,9 @@ public class Controller {
 
     @FXML
     Stage stage;
+
+    @FXML
+    VBox leftpanel;
 
     String path = "res";
 
@@ -41,6 +48,16 @@ public class Controller {
         IMG_SIZE = Math.min(300,
                 (int)Math.min(mycanvas.getHeight() - 2 * IMG_PAD, mycanvas.getWidth() - 2 * IMG_PAD));
         System.out.println(IMG_SIZE);
+
+        ListView<String> list = new ListView<>();
+        list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        ObservableList<String> items = FXCollections.observableArrayList (
+                "Single", "Double", "Suite", "Family App", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite"
+                , "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite"
+                , "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite", "Double", "Suite");
+        list.setItems(items);
+
+        leftpanel.getChildren().add(list);
     }
 
 
@@ -141,7 +158,12 @@ public class Controller {
         DirectoryChooser chooser = new DirectoryChooser();
 
         URL url = getClass().getResource(".");
-        File defaultDir = new File(url.getPath() + File.separator + path);
+        File defaultDir = null;
+        try {
+            defaultDir = new File(URLDecoder.decode(url.getPath(),"UTF-8") + File.separator + path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         chooser.setInitialDirectory(defaultDir);
 
         File selectedDirectory = chooser.showDialog(stage);

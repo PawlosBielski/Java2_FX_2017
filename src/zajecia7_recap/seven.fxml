@@ -64,7 +64,7 @@
             <Canvas fx:id="mycanvas" height="400" width="400" />
         </center>
         <left>
-            <VBox alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5; -fx-pref-width: 130">
+            <VBox fx:id="leftpanel" alignment="TOP_CENTER" style="-fx-border-style: solid;-fx-border-radius: 5; -fx-pref-width: 130">
 
             </VBox>
         </left>
